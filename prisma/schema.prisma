@@ -1,0 +1,164 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    ADMIN
+    USER
+}
+
+enum OrderEventStatus {
+    PENDING
+    ACCEPTED
+    OUT_FOR_DELIVERY
+    DELIVERED
+    CANCELLED
+}
+
+model User {
+    id                       String     @id @unique @default(uuid())
+    first_name               String
+    last_name                String
+    email                    String     @unique
+    password                 String
+    role                     Role       @default(USER)
+    defaultShippingAddressId Int?
+    defaultBillingAddressId  Int?
+    addresses                Address[]
+    cartItems                CartItem[]
+    orders                   Order[]
+    createdAt                DateTime   @default(now())
+    updatedAt                DateTime   @updatedAt
+    otp                      Otp[]
+
+    @@map("users")
+}
+
+model Otp {
+    id     String   @id @unique @default(uuid())
+    token  String
+    expiry DateTime
+    userId String
+    user   User     @relation(fields: [userId], references: [id])
+}
+
+model Address {
+    id        Int      @id @default(autoincrement())
+    lineOne   String
+    lineTwo   String?
+    city      String
+    country   String
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("addresses")
+}
+
+model Product {
+    id                String              @id @unique @default(uuid())
+    name              String
+    description       String              @db.Text
+    price             Decimal
+    stockQuantity     Int
+    isHidden          Boolean             @default(false)
+    variations        Variation[]
+    cartItems         CartItem[]
+    orderProducts     OrderProduct[]
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+    StockNotification StockNotification[]
+
+    // @@fulltext([name, description])
+    @@map("products")
+}
+
+model Variation {
+    id           String         @id @unique @default(uuid())
+    productId    String
+    product      Product        @relation(fields: [productId], references: [id])
+    type         String // e.g., size, color
+    value        String // e.g., 'M', 'Red'
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    CartItem     CartItem[]
+    OrderProduct OrderProduct[]
+
+    @@map("variations")
+}
+
+model StockNotification {
+    id         String   @id @unique @default(uuid())
+    productId  String
+    product    Product  @relation(fields: [productId], references: [id])
+    threshold  Int
+    isNotified Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@map("stock_notifications")
+}
+
+model CartItem {
+    id          Int        @id @default(autoincrement())
+    userId      String
+    user        User       @relation(fields: [userId], references: [id])
+    quantity    Int
+    productId   String
+    product     Product    @relation(fields: [productId], references: [id])
+    variationId String?
+    variation   Variation? @relation(fields: [variationId], references: [id])
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+
+    @@map("cart_items")
+}
+
+model Order {
+    id              String           @id @unique @default(uuid())
+    userId          String
+    user            User             @relation(fields: [userId], references: [id])
+    netAmount       Decimal
+    shippingAddress String
+    billingAddress  String
+    orderProducts   OrderProduct[]
+    events          OrderEvent[]
+    status          OrderEventStatus @default(PENDING)
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+
+    @@map("orders")
+}
+
+model OrderProduct {
+    id          Int        @id @default(autoincrement())
+    orderId     String
+    order       Order      @relation(fields: [orderId], references: [id])
+    productId   String
+    product     Product    @relation(fields: [productId], references: [id])
+    variationId String?
+    variation   Variation? @relation(fields: [variationId], references: [id])
+    quantity    Int
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+
+    @@map("order_products")
+}
+
+model OrderEvent {
+    id        Int              @id @default(autoincrement())
+    orderId   String
+    order     Order            @relation(fields: [orderId], references: [id])
+    status    OrderEventStatus @default(PENDING)
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+
+    @@map("order_events")
+}
