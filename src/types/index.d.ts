@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 declare module "express-serve-static-core" {
     interface Request {
         user?: User;
@@ -11,8 +12,18 @@ export interface IUserSignUp {
     email: string;
     password: string;
 }
+export interface IUserLogin {
+    email: string;
+    password: string;
+}
+export interface IProduct {
+    name: string;
+    description: string;
+    price: Decimal;
+    stockQuantity: Int;
+}
 export interface IAuthService {
-    // login(payload: IUserLogin): Promise<unknown>;
+    login(payload: IUserLogin): Promise<unknown>;
     signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
     // verifyEmail(token: string, email: string): Promise<unknown>;
     // changePassword(

@@ -5,14 +5,15 @@ import log from "./logger";
 
 const Sendmail = async (emailcontent: any) => {
     const transporter = nodemailer.createTransport({
-        service: config.SMTP_SERVICE,
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
+        host: "smtp.elasticemail.com",
+        port: 2525,
         auth: {
-            user: config.SMTP_USER,
-            pass: config.SMTP_PASSWORD,
+            user: config.ELASTIC_EMAIL,
+            pass: config.ELASTIC_PASSWORD,
         },
+        // tls: {
+        //     rejectUnauthorized: false,
+        // },
     });
     try {
         const transRes = await transporter.verify()

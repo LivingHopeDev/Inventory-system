@@ -4,7 +4,6 @@ export class EmailService {
     async otpEmailTemplate(first_name: String, otp: String) {
         const intro = `
     <p>
-      Hi ${first_name},<br><br>
 
       We received a request to verify your email address for your account. Please use the following One-Time Password (OTP) to complete the verification process:<br><br>
 

@@ -17,22 +17,8 @@ export const signup = asyncHandler(async (
     res.status(201).json({ message, access_token, user });
 });
 
-// export const login = async (req: Request, res: Response) => {
-//     const { email, password } = req.body;
-//     let user = await prismaClient.user.findFirst({ where: { email } });
-//     if (!user) {
-//         throw new NotFoundException(
-//             "Email and password doesn't match",
-//             ErrorCode.USER_NOT_FOUND
-//         );
-//     }
-//     if (!compareSync(password, user.password)) {
-//         throw new NotFoundException(
-//             "Email and password doesn't match",
-//             ErrorCode.INCORRECT_PASSWORD
-//         );
-//     }
+export const login = async (req: Request, res: Response) => {
+    const { message, access_token, user } = await authService.login(req.body);
 
-//     const token = jwt.sign({ userId: user.id }, JWT_SCERET);
-//     res.status(200).json({ user, token });
-// };
+    res.status(200).json({ message, access_token, user });
+};

@@ -25,13 +25,13 @@ class ResourceNotFound extends HttpError {
   }
 }
 
-class Unauthorized extends HttpError {
+class Unauthenticated extends HttpError {
   constructor(message: string) {
     super(401, message);
   }
 }
 
-class Forbidden extends HttpError {
+class Unauthorised extends HttpError {
   constructor(message: string) {
     super(403, message);
   }
@@ -89,12 +89,12 @@ export {
   BadRequest,
   Conflict,
   errorHandler,
-  Forbidden,
+  Unauthorised,
   HttpError,
   InvalidInput,
   ResourceNotFound,
   routeNotFound,
   ServerError,
-  Unauthorized,
+  Unauthenticated,
   Expired,
 };
