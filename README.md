@@ -29,6 +29,15 @@ The Barb Shoe Store Inventory Management System is a comprehensive backend servi
 - **Variation Management:**
   - Specify available product variations such as sizes, colors, and materials.
 
+### Client Features
+
+- **Product Browsing:**
+  - Browse and view detailed product information.
+  - Filter and search products by various attributes.
+- **Purchase Simulation:**
+  - Simulate the purchase process including adding products to the cart, checkout, and adding billing information (no real transactions).
+  - Cancel orders.
+
 ## Technology Stack
 
 - **Backend:** Node.js with Express.js
