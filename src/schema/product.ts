@@ -6,3 +6,9 @@ export const productSchema = z.object({
     price: z.number(),
     stockQuantity: z.number(),
 });
+
+export const variationSchema = z.object({
+    productId: z.string(),
+    type: z.string(),
+    value: z.string(),
+});

@@ -1,4 +1,3 @@
-import { string } from "zod";
 import { IProduct } from "../types";
 import { Product } from "@prisma/client";
 import { prismaClient } from "..";
@@ -7,11 +6,10 @@ export class ProductService {
 
     public async createProduct(payload: IProduct): Promise<{
         message: string;
-        product: Partial<Product>;
+        data: Partial<Product>;
     }> {
 
         const { name, description, price, stockQuantity } = payload
-        console.log({ name, description, price, stockQuantity })
         const product = await prismaClient.product.create({
             data: {
                 name,
@@ -23,29 +21,34 @@ export class ProductService {
 
         return {
             message: "Product created",
-            product,
+            data: product,
         }
     }
     public async updateProduct(payload: string, productId: string): Promise<{
         message: string;
-        product: Partial<Product>
+        data: Partial<Product>
     }> {
 
-        const product = await prismaClient.product.update({
+        let product = await prismaClient.product.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            throw new ResourceNotFound(`Product with ID ${productId} not found`);
+        }
+        product = await prismaClient.product.update({
             where: { id: productId },
             data: payload
         })
-        if (!product) {
-            throw new ResourceNotFound(`Product with ID ${productId} not found`)
-        }
+
         return {
             message: "Product updated",
-            product,
+            data: product,
         }
     }
     public async getProductById(productId: string): Promise<{
         message: string;
-        product: Partial<Product>
+        data: Partial<Product>
     }> {
 
         const product = await prismaClient.product.findFirst({
@@ -57,34 +60,37 @@ export class ProductService {
         }
         return {
             message: "Product info",
-            product: product
+            data: product
         }
     }
 
     public async getAllProduct(skip: string): Promise<{
         message: string;
-        product: Partial<Product>[]
+        data: Partial<Product>[]
     }> {
 
         const product = await prismaClient.product.findMany({
             skip: Number(skip) || 0,
             take: 10,
+            include: {
+                variations: true
+            },
         })
         if (!product || product.length == 0) {
             return {
                 message: "No Product listed yet",
-                product: product
+                data: product
             }
         }
 
         return {
             message: "Product info",
-            product: product
+            data: product
         }
     }
     public async deleteProduct(productId: string): Promise<{
         message: string;
-        product: Partial<Product>
+        data: Partial<Product>
     }> {
         const product = await prismaClient.product.findUnique({
             where: { id: productId },
@@ -99,12 +105,12 @@ export class ProductService {
 
         return {
             message: "Product deleted",
-            product,
+            data: product,
         }
     }
     public async serchProduct(query: string, skip: string): Promise<{
         message: string;
-        product: Partial<Product>[]
+        data: Partial<Product>[]
     }> {
         const products = await prismaClient.product.findMany({
             where: {
@@ -122,12 +128,16 @@ export class ProductService {
         if (!products) {
             return {
                 message: "No Product match",
-                product: products,
+                data: products,
             }
         }
         return {
             message: "Product search result",
-            product: products,
+            data: products,
         }
     }
+
+
+
+
 }

@@ -67,12 +67,14 @@ const routeNotFound = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const errorHandler = (
-  err: HttpError,
+  err: HttpError | any,
   _req: Request,
   res: Response,
   _next: NextFunction,
 ) => {
-  const { success, status_code, message } = err;
+  const success = err.success !== undefined ? err.success : false;
+  const status_code = err.status_code || 500;
+  const message = err.message || "An unexpected error occurred";
   const cleanedMessage = message.replace(/"/g, "");
 
   if (config.NODE_ENV === "development") {

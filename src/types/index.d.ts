@@ -22,6 +22,12 @@ export interface IProduct {
     price: Decimal;
     stockQuantity: Int;
 }
+export interface IVariation {
+    productId: string;
+    type: string;
+    value: string;
+}
+
 export interface IAuthService {
     login(payload: IUserLogin): Promise<unknown>;
     signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
