@@ -107,7 +107,7 @@ model StockNotification {
 }
 
 model CartItem {
-    id          Int        @id @default(autoincrement())
+    id          String     @id @unique @default(uuid())
     userId      String
     user        User       @relation(fields: [userId], references: [id])
     quantity    Int
@@ -138,7 +138,7 @@ model Order {
 }
 
 model OrderProduct {
-    id          Int        @id @default(autoincrement())
+    id          String     @id @unique @default(uuid())
     orderId     String
     order       Order      @relation(fields: [orderId], references: [id])
     productId   String
@@ -153,7 +153,7 @@ model OrderProduct {
 }
 
 model OrderEvent {
-    id        Int              @id @default(autoincrement())
+    id        String           @id @unique @default(uuid())
     orderId   String
     order     Order            @relation(fields: [orderId], references: [id])
     status    OrderEventStatus @default(PENDING)
