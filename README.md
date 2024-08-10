@@ -106,7 +106,7 @@ yarn prisma migrate dev
 ### API Documentation
 
 Visit the url below to view the documentation
-localhost:yourport/api-docs
+```localhost:8000/api-docs```
 
 ### Contributing
 
