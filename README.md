@@ -105,7 +105,8 @@ yarn prisma migrate dev
 
 ### API Documentation
 
-The API documentation is currently under development and will be provided in the future.
+Visit the url below to view the documentation
+localhost:yourport/api-docs
 
 ### Contributing
 
