@@ -11,7 +11,7 @@ export const addToCart = asyncHandler(async (req: Request, res: Response) => {
 })
 
 
-export const reduceCartItem = asyncHandler(
+export const updateCartItem = asyncHandler(
     async (req: Request, res: Response) => {
         const cartItemId = req.params.id;
         const { quantity } = req.body;
