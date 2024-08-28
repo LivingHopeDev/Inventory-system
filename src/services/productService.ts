@@ -5,6 +5,7 @@ import { ResourceNotFound } from "../middlewares";
 import { cloudinary } from "../utils/cloudinary";
 import { getPublicIdFromUrl } from "../utils/getPublicId"
 import log from "../utils/logger";
+import fs from "fs"
 export class ProductService {
     public async createProduct(payload: IProduct, imageFiles: Express.Multer.File[]): Promise<{
         message: string;
@@ -12,10 +13,15 @@ export class ProductService {
     }> {
         const { name, description, price, stockQuantity } = payload;
 
-        const uploadResults = await Promise.all(imageFiles.map((file) => {
-            return cloudinary.uploader.upload(file.path, {
+        const uploadResults = await Promise.all(imageFiles.map(async (file) => {
+            console.log(`Uploading file: ${file.path}`); // Log the file path before upload
+
+            const result = await cloudinary.uploader.upload(file.path, {
                 folder: "inventory/products",
             });
+            fs.unlinkSync(file.path);
+
+            return result;
         }));
 
         const imageUrls = uploadResults.map((result) => result.secure_url);
@@ -60,7 +66,6 @@ export class ProductService {
 
                 for (const imageUrl of product.imageUrls) {
                     const publicId = getPublicIdFromUrl(imageUrl);
-                    console.log(publicId)
                     if (publicId) {
                         await cloudinary.uploader.destroy(`inventory/products/${publicId}`);
                     }
@@ -74,6 +79,8 @@ export class ProductService {
                     folder: "inventory/products",
                 });
                 updatedImageUrls.push(uploadResult.secure_url);
+                fs.unlinkSync(imageFile.path);
+
             }
 
         }
