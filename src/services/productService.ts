@@ -1,33 +1,49 @@
 import { IProduct } from "../types";
-import { Product } from "@prisma/client";
+import { Product, Prisma } from "@prisma/client";
 import { prismaClient } from "..";
 import { ResourceNotFound } from "../middlewares";
+import { cloudinary } from "../utils/cloudinary";
+import { getPublicIdFromUrl } from "../utils/getPublicId"
+import log from "../utils/logger";
 export class ProductService {
-
-    public async createProduct(payload: IProduct): Promise<{
+    public async createProduct(payload: IProduct, imageFiles: Express.Multer.File[]): Promise<{
         message: string;
         data: Partial<Product>;
     }> {
+        const { name, description, price, stockQuantity } = payload;
 
-        const { name, description, price, stockQuantity } = payload
+        const uploadResults = await Promise.all(imageFiles.map((file) => {
+            return cloudinary.uploader.upload(file.path, {
+                folder: "inventory/products",
+            });
+        }));
+
+        const imageUrls = uploadResults.map((result) => result.secure_url);
+
         const product = await prismaClient.product.create({
             data: {
                 name,
                 description,
-                price,
-                stockQuantity
-            }
-        })
+                price: new Prisma.Decimal(price),
+                stockQuantity: parseInt(stockQuantity),
+                imageUrls,
+            },
+        });
 
         return {
             message: "Product created",
             data: product,
-        }
+        };
     }
-    public async updateProduct(payload: string, productId: string): Promise<{
+    public async updateProduct(
+        payload: Partial<IProduct>,
+        productId: string,
+        imageFiles?: Express.Multer.File[]
+    ): Promise<{
         message: string;
-        data: Partial<Product>
+        data: Partial<Product>;
     }> {
+        const { name, description, price, stockQuantity } = payload;
 
         let product = await prismaClient.product.findUnique({
             where: { id: productId },
@@ -36,34 +52,67 @@ export class ProductService {
         if (!product) {
             throw new ResourceNotFound(`Product with ID ${productId} not found`);
         }
+
+        let updatedImageUrls = product.imageUrls || [];
+
+        if (imageFiles && imageFiles.length > 0) {
+            if (product.imageUrls && product.imageUrls.length > 0) {
+
+                for (const imageUrl of product.imageUrls) {
+                    const publicId = getPublicIdFromUrl(imageUrl);
+                    console.log(publicId)
+                    if (publicId) {
+                        await cloudinary.uploader.destroy(`inventory/products/${publicId}`);
+                    }
+                }
+
+                updatedImageUrls = [];
+            }
+
+            for (const imageFile of imageFiles) {
+                const uploadResult = await cloudinary.uploader.upload(imageFile.path, {
+                    folder: "inventory/products",
+                });
+                updatedImageUrls.push(uploadResult.secure_url);
+            }
+
+        }
+
         product = await prismaClient.product.update({
             where: { id: productId },
-            data: payload
-        })
+            data: {
+                name,
+                description,
+                price: price,
+                stockQuantity: parseInt(stockQuantity),
+                imageUrls: updatedImageUrls,
+            },
+        });
 
         return {
             message: "Product updated",
             data: product,
-        }
+        };
     }
+
     public async getProductById(productId: string): Promise<{
         message: string;
-        data: Partial<Product>
+        data: Partial<Product>;
     }> {
 
         const product = await prismaClient.product.findFirst({
-            where: { id: productId }
+            where: { id: productId },
+        });
 
-        })
         if (!product) {
-            throw new ResourceNotFound(`Product with ID ${productId} not found`)
+            throw new ResourceNotFound(`Product with ID ${productId} not found`);
         }
+
         return {
             message: "Product info",
-            data: product
-        }
+            data: product,
+        };
     }
-
     public async getAllProduct(skip: string): Promise<{
         message: string;
         data: Partial<Product>[]
@@ -90,7 +139,7 @@ export class ProductService {
     }
     public async deleteProduct(productId: string): Promise<{
         message: string;
-        data: Partial<Product>
+        data: Partial<Product>;
     }> {
         const product = await prismaClient.product.findUnique({
             where: { id: productId },
@@ -99,15 +148,26 @@ export class ProductService {
         if (!product) {
             throw new ResourceNotFound(`Product with ID ${productId} not found`);
         }
+
+        if (product.imageUrls && product.imageUrls.length > 0) {
+            for (const imageUrl of product.imageUrls) {
+                const publicId = getPublicIdFromUrl(imageUrl);
+                if (publicId) {
+                    await cloudinary.uploader.destroy(`inventory/products/${publicId}`);
+                }
+            }
+        }
+
         await prismaClient.product.delete({
             where: { id: productId },
-        })
+        });
 
         return {
             message: "Product deleted",
             data: product,
-        }
+        };
     }
+
     public async serchProduct(query: string, skip: string): Promise<{
         message: string;
         data: Partial<Product>[]

@@ -21,6 +21,16 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "Otp" (
+    "id" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expiry" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Otp_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "addresses" (
     "id" SERIAL NOT NULL,
     "lineOne" TEXT NOT NULL,
@@ -41,6 +51,7 @@ CREATE TABLE "products" (
     "description" TEXT NOT NULL,
     "price" DECIMAL(65,30) NOT NULL,
     "stockQuantity" INTEGER NOT NULL,
+    "imageUrls" TEXT[],
     "isHidden" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -74,7 +85,7 @@ CREATE TABLE "stock_notifications" (
 
 -- CreateTable
 CREATE TABLE "cart_items" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL,
     "productId" TEXT NOT NULL,
@@ -101,7 +112,7 @@ CREATE TABLE "orders" (
 
 -- CreateTable
 CREATE TABLE "order_products" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "variationId" TEXT,
@@ -114,7 +125,7 @@ CREATE TABLE "order_products" (
 
 -- CreateTable
 CREATE TABLE "order_events" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "status" "OrderEventStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -130,6 +141,9 @@ CREATE UNIQUE INDEX "users_id_key" ON "users"("id");
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Otp_id_key" ON "Otp"("id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "products_id_key" ON "products"("id");
 
 -- CreateIndex
@@ -139,7 +153,19 @@ CREATE UNIQUE INDEX "variations_id_key" ON "variations"("id");
 CREATE UNIQUE INDEX "stock_notifications_id_key" ON "stock_notifications"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "cart_items_id_key" ON "cart_items"("id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "orders_id_key" ON "orders"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "order_products_id_key" ON "order_products"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "order_events_id_key" ON "order_events"("id");
+
+-- AddForeignKey
+ALTER TABLE "Otp" ADD CONSTRAINT "Otp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

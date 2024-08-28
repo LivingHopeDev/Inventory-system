@@ -72,6 +72,7 @@ const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
+  log.error(err)
   const success = err.success !== undefined ? err.success : false;
   const status_code = err.status_code || 500;
   const message = err.message || "An unexpected error occurred";

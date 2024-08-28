@@ -4,13 +4,28 @@ import { ProductService } from "../services";
 
 const productService = new ProductService()
 export const createProduct = asyncHandler(async (req: Request, res: Response) => {
-    const { message, data } = await productService.createProduct(req.body)
-    res.status(201).json({ message, data })
+    let files: Express.Multer.File[] = [];
 
-})
+    if (Array.isArray(req.files)) {
+        files = req.files;
+    } else if (req.file) {
+        files = [req.file];
+    }
+
+    const { message, data } = await productService.createProduct(req.body, files);
+
+    res.status(201).json({ message, data });
+});
 
 export const updateProduct = asyncHandler(async (req: Request, res: Response) => {
-    const { message, data } = await productService.updateProduct(req.body, req.params.id)
+    let files: Express.Multer.File[] = [];
+
+    if (Array.isArray(req.files)) {
+        files = req.files;
+    } else if (req.file) {
+        files = [req.file];
+    }
+    const { message, data } = await productService.updateProduct(req.body, req.params.id, files)
 
     res.status(200).json({ message, data })
 
