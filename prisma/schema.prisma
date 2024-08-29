@@ -141,14 +141,14 @@ model Order {
 model OrderProduct {
     id          String     @id @unique @default(uuid())
     orderId     String
-    order       Order      @relation(fields: [orderId], references: [id])
+    order       Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
     productId   String
     product     Product    @relation(fields: [productId], references: [id])
     variationId String?
     variation   Variation? @relation(fields: [variationId], references: [id])
     quantity    Int
     createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
+    updatedAt   DateTime   @default(now())
 
     @@map("order_products")
 }
@@ -156,10 +156,10 @@ model OrderProduct {
 model OrderEvent {
     id        String           @id @unique @default(uuid())
     orderId   String
-    order     Order            @relation(fields: [orderId], references: [id])
+    order     Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
     status    OrderEventStatus @default(PENDING)
     createdAt DateTime         @default(now())
-    updatedAt DateTime         @updatedAt
+    updatedAt DateTime         @default(now())
 
     @@map("order_events")
 }

@@ -14,7 +14,7 @@ export class ProductService {
         const { name, description, price, stockQuantity } = payload;
 
         const uploadResults = await Promise.all(imageFiles.map(async (file) => {
-            console.log(`Uploading file: ${file.path}`); // Log the file path before upload
+            console.log(`Uploading file: ${file.path}`);
 
             const result = await cloudinary.uploader.upload(file.path, {
                 folder: "inventory/products",
