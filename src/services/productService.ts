@@ -11,10 +11,9 @@ export class ProductService {
         message: string;
         data: Partial<Product>;
     }> {
-        const { name, description, price, stockQuantity } = payload;
+        const { name, description, price, stockQuantity, threshold } = payload;
 
         const uploadResults = await Promise.all(imageFiles.map(async (file) => {
-            console.log(`Uploading file: ${file.path}`);
 
             const result = await cloudinary.uploader.upload(file.path, {
                 folder: "inventory/products",
@@ -35,6 +34,13 @@ export class ProductService {
                 imageUrls,
             },
         });
+        await prismaClient.stockNotification.create({
+            data: {
+                productId: product.id,
+                threshold: parseInt(threshold)
+
+            },
+        });
 
         return {
             message: "Product created",
@@ -49,12 +55,18 @@ export class ProductService {
         message: string;
         data: Partial<Product>;
     }> {
-        const { name, description, price, stockQuantity } = payload;
+        const { name, description, price, stockQuantity, threshold } = payload;
 
         let product = await prismaClient.product.findUnique({
             where: { id: productId },
         });
+        const stockNotification = await prismaClient.stockNotification.findFirst({
+            where: { productId: productId }
+        })
+        if (!stockNotification) {
+            throw new ResourceNotFound(`Product notification not found`);
 
+        }
         if (!product) {
             throw new ResourceNotFound(`Product with ID ${productId} not found`);
         }
@@ -95,7 +107,12 @@ export class ProductService {
                 imageUrls: updatedImageUrls,
             },
         });
-
+        await prismaClient.stockNotification.update({
+            where: { id: stockNotification.id },
+            data: {
+                threshold: parseInt(threshold)
+            }
+        })
         return {
             message: "Product updated",
             data: product,

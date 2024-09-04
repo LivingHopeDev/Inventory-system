@@ -19,8 +19,18 @@ export { variationRoute };
  * /variations:
  *   post:
  *     summary: Create a new product variation
- *     description: Creates a new variation for a product, such as size or color, and associates it with the specified product.
+ *     description: Creates a new variation for a product, such as size or color, and associates it with the specified product. Requires authorization.
  *     tags: [Variations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -76,16 +86,17 @@ export { variationRoute };
  *                 message:
  *                   type: string
  *                   example: "Product with ID abc123 not found"
- * */
-
+ */
 
 /**
  * @swagger
  * /variations/{id}:
  *   patch:
  *     summary: Update an existing product variation
- *     description: Updates the details of an existing variation (such as type or value) for a product based on the provided variation ID.
+ *     description: Updates the details of an existing variation (such as type or value) for a product based on the provided variation ID. Requires authorization.
  *     tags: [Variations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -94,6 +105,13 @@ export { variationRoute };
  *         schema:
  *           type: string
  *           example: "var123"
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -145,7 +163,8 @@ export { variationRoute };
  *                 message:
  *                   type: string
  *                   example: "Variation with ID var123 not found"
- * */
+ */
+
 
 
 /**
@@ -153,8 +172,10 @@ export { variationRoute };
  * /variations/{id}:
  *   delete:
  *     summary: Delete a product variation
- *     description: Deletes a specific product variation identified by the variation ID.
+ *     description: Deletes a specific product variation identified by the variation ID. Requires authorization.
  *     tags: [Variations]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -163,6 +184,13 @@ export { variationRoute };
  *         schema:
  *           type: string
  *           example: "var123"
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     responses:
  *       200:
  *         description: Variation successfully deleted.
@@ -199,7 +227,8 @@ export { variationRoute };
  *                 message:
  *                   type: string
  *                   example: "Variation with ID var123 not found"
- * */
+ */
+
 
 /**
  * @swagger

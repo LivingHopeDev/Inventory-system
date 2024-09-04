@@ -21,6 +21,7 @@ export interface IProduct {
     description: string;
     price: Decimal;
     stockQuantity: Int;
+    threshold: Int;
 }
 export interface IVariation {
     productId: string;

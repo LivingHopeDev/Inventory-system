@@ -1,5 +1,6 @@
 import { PrismaClient, Order, OrderEventStatus } from "@prisma/client";
-import { ResourceNotFound, Unauthorised } from "../middlewares";
+import { BadRequest, ResourceNotFound, Unauthorised } from "../middlewares";
+import io from "../index"
 
 const prismaClient = new PrismaClient();
 
@@ -163,21 +164,55 @@ export class OrderService {
         };
     }
     public async updateOrderStatus(orderId: string, newStatus: OrderEventStatus, userId: string): Promise<{ message: string, data: Partial<Order> }> {
-        const user = await prismaClient.user.findFirst({
-            where: {
-                id: userId,
-            },
-        });
 
+        if (!Object.values(OrderEventStatus).includes(newStatus)) {
+            throw new BadRequest(`Invalid order status: ${newStatus}`);
+        }
+        const user = await prismaClient.user.findFirst({ where: { id: userId } });
         if (!user) {
             throw new ResourceNotFound("User not found.");
         }
 
         const order = await prismaClient.order.findUnique({
             where: { id: orderId },
+            include: { orderProducts: true, events: true },
+        });
+        if (!order) {
+            throw new ResourceNotFound(`Order with ID ${orderId} not found`);
+        }
+
+        const updatedOrder = await prismaClient.order.update({
+            where: { id: orderId },
+            data: { status: newStatus },
+            include: { orderProducts: true },
+        });
+
+        // Update the order event
+        const latestEvent = await prismaClient.orderEvent.findFirst({
+            where: { orderId: updatedOrder.id },
+            orderBy: { createdAt: 'desc' },
+        });
+        if (latestEvent) {
+            await prismaClient.orderEvent.update({
+                where: { id: latestEvent.id },
+                data: { status: newStatus },
+            });
+        }
+
+        // Reduce stock if the order is delivered
+        if (newStatus === OrderEventStatus.DELIVERED) {
+            await this.reduceStock(orderId);
+        }
+
+
+
+        return { message: `Order status updated to ${newStatus}`, data: updatedOrder };
+    }
+    public async reduceStock(orderId: string) {
+        const order = await prismaClient.order.findUnique({
+            where: { id: orderId },
             include: {
                 orderProducts: true,
-                events: true,
             },
         });
 
@@ -185,41 +220,31 @@ export class OrderService {
             throw new ResourceNotFound(`Order with ID ${orderId} not found`);
         }
 
-        const updatedOrder = await prismaClient.order.update({
-            where: { id: orderId },
-            data: {
-                status: newStatus,
-            },
-            include: {
-                orderProducts: true,
-            },
-        });
-
-        const latestEvent = await prismaClient.orderEvent.findFirst({
-            where: {
-                orderId: updatedOrder.id,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-
-        if (latestEvent) {
-            await prismaClient.orderEvent.update({
-                where: {
-                    id: latestEvent.id,
-                },
-                data: {
-                    status: newStatus,
-                },
+        await Promise.all(order.orderProducts.map(async (orderProduct) => {
+            const product = await prismaClient.product.update({
+                where: { id: orderProduct.productId },
+                data: { stockQuantity: { decrement: orderProduct.quantity } },
             });
-        }
 
-        return {
-            message: `Order status updated to ${newStatus}`,
-            data: updatedOrder,
-        };
+            const stockNotification = await prismaClient.stockNotification.findFirst({
+                where: { productId: product.id, isNotified: false },
+            });
+
+            if (stockNotification && product.stockQuantity <= stockNotification.threshold) {
+                io.emit("lowStockNotification", {
+                    productId: product.id,
+                    productName: product.name,
+                    remainingStock: product.stockQuantity,
+                });
+                await prismaClient.stockNotification.update({
+                    where: { id: stockNotification.id },
+                    data: { isNotified: true },
+                });
+            }
+        }));
+
     }
+
 
     public async deleteOrder(orderId: string): Promise<{ message: string }> {
         const order = await prismaClient.order.findFirst({
@@ -238,5 +263,7 @@ export class OrderService {
             message: "Order and its related data deleted successfully",
         };
     }
+
+
 
 }

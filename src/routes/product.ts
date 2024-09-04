@@ -22,8 +22,18 @@ export { productRoute };
  * /products:
  *   post:
  *     summary: Create a new product
- *     description: Creates a new product with the given details and returns the created product's information.
+ *     description: Creates a new product with the given details and returns the created product's information. Requires authorization.
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -45,11 +55,16 @@ export { productRoute };
  *                 type: integer
  *                 description: The available stock quantity of the product.
  *                 example: 100
+ *               threshold:
+ *                 type: integer
+ *                 description: The lowest quantity of the product for the notification to be triggered .
+ *                 example: 10
  *             example:
  *               name: "New Product"
  *               description: "This is a description of the new product."
  *               price: 29.99
  *               stockQuantity: 100
+ *               threshold: 10
  *     responses:
  *       201:
  *         description: Product created successfully. Returns the product details.
@@ -79,6 +94,9 @@ export { productRoute };
  *                     stockQuantity:
  *                       type: integer
  *                       example: 100
+ *                     threshold:
+ *                       type: integer
+ *                       example: 10
  *       400:
  *         description: Invalid input data.
  *         content:
@@ -101,13 +119,17 @@ export { productRoute };
  *                   example: "An unexpected error occurred."
  */
 
+
+
 /**
  * @swagger
  * /products/{id}:
  *   patch:
  *     summary: Update an existing product
- *     description: Updates the details of an existing product identified by the product ID.
+ *     description: Updates the details of an existing product identified by the product ID. Requires authorization.
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,6 +137,13 @@ export { productRoute };
  *         schema:
  *           type: string
  *         description: The ID of the product to be updated.
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -202,63 +231,74 @@ export { productRoute };
  *                   example: "An unexpected error occurred."
  */
 
+
 /**
-* @swagger
-* /products/{id}:
-*   get:
-*     summary: Get product details by ID
-*     description: Retrieves the details of a specific product identified by the product ID.
-*     tags: [Products]
-*     parameters:
-*       - in: path
-*         name: id
-*         required: true
-*         schema:
-*           type: string
-*         description: The ID of the product to retrieve.
-*     responses:
-*       200:
-*         description: Product details successfully retrieved.
-*         content:
-*           application/json:
-*             schema:
-*               type: object
-*               properties:
-*                 message:
-*                   type: string
-*                   example: "Product info"
-*                 data:
-*                   type: object
-*                   properties:
-*                     id:
-*                       type: string
-*                       example: "abc123"
-*                     name:
-*                       type: string
-*                       example: "Product Name"
-*                     description:
-*                       type: string
-*                       example: "Description of the product."
-*                     price:
-*                       type: number
-*                       example: 19.99
-*                     stockQuantity:
-*                       type: integer
-*                       example: 150
-*       404:
-*         description: Product not found.
-*         content:
-*           application/json:
-*             schema:
-*               type: object
-*               properties:
-*                 message:
-*                   type: string
-*                   example: "Product with ID abc123 not found"
-*                 status_code:
-*                   type: integer
-*                   example: 404
-*/
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     summary: Get product details by ID
+ *     description: Retrieves the details of a specific product identified by the product ID. Requires authorization.
+ *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the product to retrieve.
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
+ *     responses:
+ *       200:
+ *         description: Product details successfully retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product info"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "abc123"
+ *                     name:
+ *                       type: string
+ *                       example: "Product Name"
+ *                     description:
+ *                       type: string
+ *                       example: "Description of the product."
+ *                     price:
+ *                       type: number
+ *                       example: 19.99
+ *                     stockQuantity:
+ *                       type: integer
+ *                       example: 150
+ *       404:
+ *         description: Product not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product with ID abc123 not found"
+ *                 status_code:
+ *                   type: integer
+ *                   example: 404
+ */
+
 
 
 /**
@@ -341,8 +381,10 @@ export { productRoute };
  * /products/{id}:
  *   delete:
  *     summary: Delete a product
- *     description: Deletes a product by its ID.
+ *     description: Deletes a product by its ID. Requires authorization.
  *     tags: [Products]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -350,6 +392,13 @@ export { productRoute };
  *         schema:
  *           type: string
  *         description: The ID of the product to delete.
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     responses:
  *       200:
  *         description: Product successfully deleted.
@@ -389,7 +438,7 @@ export { productRoute };
  *                 message:
  *                   type: string
  *                   example: "Product with ID {id} not found"
- * */
+ */
 
 /**
  * @swagger

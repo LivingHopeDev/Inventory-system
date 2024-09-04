@@ -5,6 +5,7 @@ export const productSchema = z.object({
     description: z.string(),
     price: z.string(),
     stockQuantity: z.string(),
+    threshold: z.string()
 });
 
 export const variationSchema = z.object({

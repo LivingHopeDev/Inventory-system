@@ -23,8 +23,18 @@ export { cartRoute };
  * /cart:
  *   post:
  *     summary: Add an item to the user's cart
- *     description: Adds a product with a specific variation to the user's cart. If the item already exists in the cart, the quantity will be updated.
+ *     description: Adds a product with a specific variation to the user's cart. If the item already exists in the cart, the quantity will be updated. Requires authorization.
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -106,13 +116,16 @@ export { cartRoute };
  *                   example: "An unexpected error occurred."
  */
 
+
 /**
  * @swagger
  * /cart/{id}:
  *   patch:
  *     summary: Update the quantity of an item in the user's cart
- *     description: Updates the quantity of a specific item in the user's cart. If the new quantity is less than or equal to zero, the item will be removed from the cart.
+ *     description: Updates the quantity of a specific item in the user's cart. If the new quantity is less than or equal to zero, the item will be removed from the cart. Requires authorization.
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -120,6 +133,13 @@ export { cartRoute };
  *         schema:
  *           type: string
  *         description: The ID of the cart item to update.
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     requestBody:
  *       required: true
  *       content:
@@ -203,13 +223,24 @@ export { cartRoute };
  *                   example: "An unexpected error occurred."
  */
 
+
 /**
  * @swagger
  * /cart:
  *   get:
  *     summary: Retrieve the user's cart items
- *     description: Fetches all items in the user's cart, including product and variation details.
+ *     description: Fetches all items in the user's cart, including product and variation details. Requires authorization.
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         description: Bearer token for authentication
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: Bearer <your-token>
  *     responses:
  *       200:
  *         description: Cart items retrieved successfully. Returns the list of cart items.
