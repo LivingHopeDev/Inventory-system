@@ -30,18 +30,18 @@ export class AuthService implements IAuthService {
     });
     const access_token = await generateAccessToken(newUser.id);
     const otp = await this.otpService.createOtp(newUser.id);
-    const { emailBody, emailText } = await this.emailService.otpEmailTemplate(
-      first_name,
-      otp!.token
-    );
+    // const { emailBody, emailText } = await this.emailService.otpEmailTemplate(
+    //   first_name,
+    //   otp!.token
+    // );
 
-    await Sendmail({
-      from: `hopedigital2021@outlook.com`,
-      to: email,
-      subject: "OTP VERIFICATION",
-      text: emailText,
-      html: emailBody,
-    });
+    // await Sendmail({
+    //   from: `hopedigital2021@outlook.com`,
+    //   to: email,
+    //   subject: "OTP VERIFICATION",
+    //   text: emailText,
+    //   html: emailBody,
+    // });
     const userResponse = {
       id: newUser.id,
       first_name: newUser.first_name,
@@ -51,9 +51,9 @@ export class AuthService implements IAuthService {
     return {
       user: userResponse,
       access_token,
-      message:
-        "User Created Successfully. Kindly check your mail for your verification token",
+      message: "User Created Successfully.",
     };
+    // "User Created Successfully. Kindly check your mail for your verification token",
   }
 
   public async login(payload: IUserLogin): Promise<{

@@ -14,7 +14,6 @@ const __1 = require("..");
 const utils_1 = require("../utils");
 const error_1 = require("../middlewares/error");
 const _1 = require(".");
-const sendMail_1 = require("../utils/sendMail");
 class AuthService {
     constructor() {
         this.otpService = new _1.OtpService();
@@ -38,14 +37,17 @@ class AuthService {
             });
             const access_token = yield (0, utils_1.generateAccessToken)(newUser.id);
             const otp = yield this.otpService.createOtp(newUser.id);
-            const { emailBody, emailText } = yield this.emailService.otpEmailTemplate(first_name, otp.token);
-            yield (0, sendMail_1.Sendmail)({
-                from: `hopedigital2021@outlook.com`,
-                to: email,
-                subject: "OTP VERIFICATION",
-                text: emailText,
-                html: emailBody,
-            });
+            // const { emailBody, emailText } = await this.emailService.otpEmailTemplate(
+            //   first_name,
+            //   otp!.token
+            // );
+            // await Sendmail({
+            //   from: `hopedigital2021@outlook.com`,
+            //   to: email,
+            //   subject: "OTP VERIFICATION",
+            //   text: emailText,
+            //   html: emailBody,
+            // });
             const userResponse = {
                 id: newUser.id,
                 first_name: newUser.first_name,
@@ -55,8 +57,9 @@ class AuthService {
             return {
                 user: userResponse,
                 access_token,
-                message: "User Created Successfully. Kindly check your mail for your verification token",
+                message: "User Created Successfully.",
             };
+            // "User Created Successfully. Kindly check your mail for your verification token",
         });
     }
     login(payload) {
