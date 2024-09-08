@@ -9,13 +9,12 @@ import { prismaClient } from "..";
 export const authMiddleware = async (
   req: Request & { user?: User },
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-
       return res.status(401).json({
         status_code: "401",
         message: "Invalid token",
