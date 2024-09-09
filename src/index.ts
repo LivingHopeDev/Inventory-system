@@ -13,6 +13,13 @@ const app: Express = express();
 
 app.use(express.json());
 
+app.use("/api/v1", (req, res) => {
+  res.json({
+    status: "Success",
+    message: "Welcome: I will responding to your requests",
+  });
+});
+
 app.use("/api/v1", rootRouter);
 app.use("/api/docs", serve, setup(swaggerSpec));
 
