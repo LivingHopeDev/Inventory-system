@@ -4,6 +4,8 @@ The Barb Shoe Store Inventory Management System is a comprehensive backend servi
 
 ## Table of Contents
 
+-[Live url](#url)
+
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Setup](#project-setup)
@@ -15,6 +17,10 @@ The Barb Shoe Store Inventory Management System is a comprehensive backend servi
 - [API Documentation](#api-documentation)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Live url
+
+`https://inventory-system-k1ek.onrender.com/api/v1`
 
 ## Features
 
@@ -58,16 +64,16 @@ Before setting up the project, ensure you have the following installed:
 
 1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/LivingHopeDev/Inventory-system.git
-    cd Inventory-system
-    ```
+   ```bash
+   git clone https://github.com/LivingHopeDev/Inventory-system.git
+   cd Inventory-system
+   ```
 
 2. **Install dependencies:**
 
-    ```bash
-    yarn install
-    ```
+   ```bash
+   yarn install
+   ```
 
 ### Environment Variables
 
@@ -106,7 +112,8 @@ yarn prisma migrate dev
 ### API Documentation
 
 Visit the url below to view the documentation
-```localhost:8000/api/docs```
+`https://inventory-system-k1ek.onrender.com/api/docs`
+`localhost:8000/api/docs`
 
 ### Contributing
 
