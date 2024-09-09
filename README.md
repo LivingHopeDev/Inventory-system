@@ -4,8 +4,7 @@ The Barb Shoe Store Inventory Management System is a comprehensive backend servi
 
 ## Table of Contents
 
--[Live url](#url)
-
+- [Live url](#url)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Project Setup](#project-setup)
