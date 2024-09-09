@@ -29,7 +29,7 @@ export class AuthService implements IAuthService {
       },
     });
     const access_token = await generateAccessToken(newUser.id);
-    const otp = await this.otpService.createOtp(newUser.id);
+    // const otp = await this.otpService.createOtp(newUser.id);
     // const { emailBody, emailText } = await this.emailService.otpEmailTemplate(
     //   first_name,
     //   otp!.token
