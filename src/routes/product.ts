@@ -6,12 +6,31 @@ import { uploadFiles } from "../utils/multer";
 
 const productRoute = Router();
 
-productRoute.post("/", uploadFiles, validateData(productSchema), [authMiddleware, adminMiddleware], createProduct);
+productRoute.post(
+  "/",
+  uploadFiles,
+  validateData(productSchema),
+  [authMiddleware],
+  createProduct
+);
 productRoute.get("/", getAllProduct);
 productRoute.get("/search", searchProduct);
 productRoute.get("/:id", getProductById);
-productRoute.patch("/:id", uploadFiles, validateData(productSchema), [authMiddleware, adminMiddleware], updateProduct);
-productRoute.delete("/:id", [authMiddleware, adminMiddleware], deleteProduct);
+productRoute.patch(
+  "/:id",
+  uploadFiles,
+  validateData(productSchema),
+  [authMiddleware],
+  updateProduct
+);
+productRoute.delete("/:id", [authMiddleware], deleteProduct);
+
+// productRoute.post("/", uploadFiles, validateData(productSchema), [authMiddleware, adminMiddleware], createProduct);
+// productRoute.get("/", getAllProduct);
+// productRoute.get("/search", searchProduct);
+// productRoute.get("/:id", getProductById);
+// productRoute.patch("/:id", uploadFiles, validateData(productSchema), [authMiddleware, adminMiddleware], updateProduct);
+// productRoute.delete("/:id", [authMiddleware, adminMiddleware], deleteProduct);
 
 
 

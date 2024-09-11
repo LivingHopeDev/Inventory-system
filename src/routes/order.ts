@@ -8,10 +8,10 @@ const orderRoute = Router();
 orderRoute.post("/", [authMiddleware], createOrderFromCartItems);
 orderRoute.get("/", [authMiddleware], getAllOrders);
 orderRoute.get("/:id", [authMiddleware], getOrderById);
-orderRoute.patch("/:id/status", [authMiddleware, adminMiddleware], updateOrderStatus);
+orderRoute.patch("/:id/status", [authMiddleware], updateOrderStatus);
 orderRoute.patch("/:id/cancel", [authMiddleware], cancelOrder);
 
-orderRoute.delete("/:id", [authMiddleware, adminMiddleware], deleteOrder);
+orderRoute.delete("/:id", [authMiddleware], deleteOrder);
 
 
 export { orderRoute };

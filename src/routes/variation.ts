@@ -1,16 +1,34 @@
 import { variationSchema } from "../schema";
 import { validateData, authMiddleware, adminMiddleware } from "../middlewares";
-import { getAllVariation, createVariation, deleteVariation, updateVariation } from "../controllers"
+import {
+  getAllVariation,
+  createVariation,
+  deleteVariation,
+  updateVariation,
+} from "../controllers";
 import { Router } from "express";
 
 const variationRoute = Router();
 
 variationRoute.get("/", getAllVariation);
-variationRoute.post("/", validateData(variationSchema), [authMiddleware, adminMiddleware], createVariation);
-variationRoute.patch("/:id", validateData(variationSchema), [authMiddleware, adminMiddleware], updateVariation);
-variationRoute.delete("/:id", [authMiddleware, adminMiddleware], deleteVariation);
+variationRoute.post(
+  "/",
+  validateData(variationSchema),
+  [authMiddleware],
+  createVariation
+);
+variationRoute.patch(
+  "/:id",
+  validateData(variationSchema),
+  [authMiddleware],
+  updateVariation
+);
+variationRoute.delete("/:id", [authMiddleware], deleteVariation);
 
-
+// variationRoute.get("/", getAllVariation);
+// variationRoute.post("/", validateData(variationSchema), [authMiddleware, adminMiddleware], createVariation);
+// variationRoute.patch("/:id", validateData(variationSchema), [authMiddleware, adminMiddleware], updateVariation);
+// variationRoute.delete("/:id", [authMiddleware, adminMiddleware], deleteVariation);
 
 export { variationRoute };
 
@@ -165,8 +183,6 @@ export { variationRoute };
  *                   example: "Variation with ID var123 not found"
  */
 
-
-
 /**
  * @swagger
  * /variations/{id}:
@@ -228,7 +244,6 @@ export { variationRoute };
  *                   type: string
  *                   example: "Variation with ID var123 not found"
  */
-
 
 /**
  * @swagger
